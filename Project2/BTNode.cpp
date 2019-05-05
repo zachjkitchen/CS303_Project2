@@ -10,3 +10,11 @@ BTNode::BTNode(BTNode* leftChild, BTNode* rightChild, char letter) {
 	right = rightChild;
 	data = letter;
 }
+
+char BTNode::getData() {
+	return data;
+}
+
+void BTNode::setData(char letter) {
+	data = letter;
+}

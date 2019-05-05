@@ -4,125 +4,169 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <vector>
 using namespace std;
 
-/*
-//create a class for the Nodes that contains the letter and morse code
-class MorseCode
-{
-	char *letter;
-	char *code;
-};
+void traverseBT_build(string element, BTNode *newRoot) {
 
-//function to build BT
-*/
+	if (element.length() <= 1)
+	{
+		return;
+	}
 
-void traverseBT(string element, BTNode *newRoot) {
-	
 	if (element.length() == 2)
 	{
 		if (element[1] == '.')
 		{
-			cout << "placing CHARACTER left\n";
+			if (newRoot->left)
+			{
+				cout << "setting CHARACTER " << element[0] << "left\n\n";
+				newRoot->left->setData(element[0]);
+			}
+			cout << "placing CHARACTER " << element[0] << " left\n\n";
 			newRoot->left = new BTNode(NULL, NULL, element[0]);
 		}
-		else if (element[1] == '-')
+		else if (element[1] == '_')
 		{
-			cout << "placing CHARACTER right\n";
+			if (newRoot->right)
+			{
+				cout << "setting CHARACTER " << element[0] << "left\n\n";
+				newRoot->right->setData(element[0]);
+			}
+			cout << "placing CHARACTER " << element[0] << " right\n\n";
 			newRoot->right = new BTNode(NULL, NULL, element[0]);
 		}
 
 		return;
 	}
-	
+
 	for (int j = 1; j < element.length(); j++)
 	{
 		if (element[j] == '.')
 		{
-			if (newRoot->left == NULL)
+			if (!newRoot->left)
 			{
 				cout << "placing NULL left\n";
 				newRoot->left = new BTNode(NULL, NULL, NULL);
 			}
 			cout << "traversing left\n";
-			traverseBT(element.substr(j, element.length()), newRoot->left);
+			cout << "passing " << element[0] + element.substr(j + 1, element.length()) << endl;
+			traverseBT_build(element[0] + element.substr(j + 1, element.length()), newRoot->left);
 		}
-		else if (element[j] == '-')
+		else if (element[j] == '_')
 		{
-			if (newRoot->left == NULL)
+			if (!newRoot->right)
 			{
 				cout << "placing NULL right\n";
 				newRoot->right = new BTNode(NULL, NULL, NULL);
 			}
 			cout << "traversing right\n";
-			traverseBT(element.substr(j, element.length()), newRoot->right);
+			cout << "passing " << element[0] + element.substr(j + 1, element.length()) << endl;
+			traverseBT_build(element[0] + element.substr(j + 1, element.length()), newRoot->right);
 		}
-	}
-}
-void buildBT(BTNode *root, string arr[]) {
-	for (int i = 0; i < arr->length(); i++)
-	{
-		traverseBT(arr[i], root);
-	}
-}
-/*
-MorseCode buildBT(MorseCode arr[], BTNode* root, int i, ) //where i = 0
-{
-	Node *temp;
-	//need to increment through entire array. maybe use for loop instead?
-	if (i < sizeofarray)
-	{
-		temp = createNode(arr[i].letter, arr[i].code);
-		root = temp;
-		buildBT(arr, root->left, 2i + 1);
-		buildBT(arr, root->right, 2i + 2);
-	}
-	return root;
-}
-//encode function
-void encode(BTNode *node, string str)
-{
-	if (node == NULL)
+
 		return;
-	for (int i = 0; i < str.length(); i++)
-	{
-		if (*(node->letter) == str[i]) {
-			cout << (node->code);
-			//will need to skip recursive functions if this is true
-		}
-		encode(node->left, str);
-		encode(node->right, str);
 	}
 }
 
+void traverseBT_encode(string letter, BTNode *newRoot) {
+	/*
+	//encode function
+	void encode(BTNode *node, string str)
+	{
+		if (node == NULL)
+			return;
+		for (int i = 0; i < str.length(); i++)
+		{
+			if (*(node->data) == str[i]) {
+				cout << (node->code);
+				//will need to skip recursive functions if this is true
+			}
+			encode(node->left, str);
+			encode(node->right, str);
+		}
+	}
+	*/
+
+}
+
+char traverseBT_decode(string code, BTNode *newRoot) {
+
+	if (code.length() == 1)
+	{
+		if (code[0] == '.')
+		{
+			cout << "returning left child: " << newRoot->left->data << endl;
+			return newRoot->left->data;
+		}
+		else if (code[0] == '_')
+		{
+			cout << "returning right child: " << newRoot->right->data << endl;
+			return newRoot->right->data;
+		}
+	}
+
+	for (int j = 0; j < code.length() - 1; j++)
+	{
+
+
+		if (code[j] == '.')
+		{
+			cout << "traversing left\n";
+			return traverseBT_decode(code.substr(j + 1, code.length()), newRoot->left);
+		}
+		else if (code[j] == '_')
+		{
+			cout << "traversing right\n";
+			return traverseBT_decode(code.substr(j + 1, code.length()), newRoot->right);
+		}
+	}
+}
+
+void buildBT(BTNode *root, string arr[]) {
+
+	for (int i = 0; i < 26; i++)
+	{
+		cout << "ELEMENT: " << arr[i] << endl;
+		traverseBT_build(arr[i], root);
+	}
+}
 
 //decode function
-void decode(BTNode *node, string str)
+string decode(string str, BTNode *root)
 {
-	for (int i = 0; i < str.length(); i++) {
-		//check for . or _
-		if (str[i] == '.') {
-			node = node->left;
-			if (str[i + 1] == ' ' || (i + 1) == str.length()) {
-				//either the end of string or deliminator, so we have finished trying to find letter
-				cout << node.letter;
-				//make the node = root
 
-			}
-		}
-		else if (str[i] == '-') {
-			node = node->right;
-			if (str[i + 1] == ' ' || (i + 1) == str.length()) {
-				//either the end of string or deliminator, so we have finished trying to find letter
-				cout << node.letter;
-				//make the node = root
+	vector<string> codes;
+	string ele;
 
-			}
+	//populate vector of parsed codes
+	int i = 0;
+	while (str[i + 1] != NULL)
+	{
+		if (str[i] == ' ')
+		{
+			cout << "pushing " << ele << " to vector" << endl;
+			codes.push_back(ele);
+			ele = "";
 		}
+		else
+		{
+			ele += str[i];
+		}
+		i++;
 	}
-}
-*/
+	cout << "pushing " << ele + str[i] << " to vector" << endl;
+	codes.push_back(ele + str[i]);
 
+
+	string result;
+	for (int i = 0; i < codes.size(); i++)
+	{
+		result += traverseBT_decode(codes[i], root);
+	}
+
+	return result;
+}
 
 
 int main()
@@ -135,7 +179,7 @@ int main()
 	string temp;
 	int i = 0;
 
-	while (iStream)
+	while (i < 26)
 	{
 		iStream >> temp;
 		inputArr[i] = temp;
@@ -146,24 +190,10 @@ int main()
 
 	buildBT(root, inputArr);
 
-	//BTNode root = NULL;
+	string result = decode("._ ... ....", root);
 
-
+	cout << result << endl;
 
 	system("pause");
-
-	/*
-	MorseCode morseArr[] = {
-		//order node data by depth
-		//Depth 1: e, t
-		{"E", "."}, {"T", "_"},
-		//Depth 2: i, a, n, m
-		{"I", ".."}, {"A", "._"}, {"N", "_."}, {"M", "__"},
-		//Depth 3: s, u, r, w, d, k, g, o
-		{"S", "..."}, {"U", ".._"}, {"R", "._."}, {"W", ".__"}, {"D", "_.."}, {"K", "_._"}, {"G", "__."}, {"O", "___"},
-		//Depth 4: h, v, f, l, p, j, b, x, c, y, z, q
-		{"H", "...."}, {"V", "..._"}, {"F", ".._."}, {"L", "._.."}, {"P", ".__."}, {"J", ".___"}, {"B", "_..."}, {"X", "_.._"}, {"C", "_._."}, {"Y", "_.__"}, {"Z", "__.."}, {"Q", "__._"}
-	}
-	*/
 }
 

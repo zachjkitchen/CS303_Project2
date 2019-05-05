@@ -14,7 +14,8 @@ public:
 	BTNode(BTNode* leftChild, BTNode* rightChild, char data);
 
 	char getLetter();
-	string getCode();
+	char getData();
+	void setData(char);
 
 	BTNode *left, *right;
 
